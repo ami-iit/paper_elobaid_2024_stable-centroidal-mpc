@@ -20,7 +20,7 @@ Tomohiro Chaki, Tomohiro Kawakami, Takahide Yoshiike and Daniele Pucci</p>
 
 ## Reproducing the experiments
 
-<p> ⚠️ Instructions to reproduce experiments are coming soon</p>
+<p> ⚠️ Instructions and code to reproduce experiments are coming soon</p>
 
 ## Maintainers
 
