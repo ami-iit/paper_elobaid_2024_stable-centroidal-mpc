@@ -3,8 +3,8 @@ Online Non-linear Centroidal MPC with Stability Guarantees
 for Robust Legged Robots Locomotion</h1>
 
 <div align="center">
-<p>Mohamed Elobaid, Giulio Turrisi,Tomohiro Kawakami, Lorezno Rapetti, Giulio Romualdi, </br>
-Stefano Dafarra, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele Pucci</p>
+<p>Mohamed Elobaid, Giulio Turrisi, Lorezno Rapetti, Giulio Romualdi, Stefano Dafarra, </br>
+Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele Pucci</p>
 </div>
 
 <br>
@@ -13,7 +13,7 @@ Stefano Dafarra, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele P
 <div align="center">
     📅 Submitted to the IEEE Robotics and Automation Letters (RAL) 🤖
 </div>
- 
+
 <div align="center">
     <a href="#reproducing-the-experiments"><b>🔧 Installation 🔧</b></a>
 </div>

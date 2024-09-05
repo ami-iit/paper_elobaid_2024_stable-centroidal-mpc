@@ -315,7 +315,7 @@ void runSimulation(bool enableStabilityConstraint, const std::string& outputFile
     std::chrono::nanoseconds currentTime = 0s;
     auto phaseIt = phaseList.getPresentPhase(currentTime);
 
-    constexpr int simulationHorizon = 50;
+    constexpr int simulationHorizon = 40;
     std::vector<Eigen::Vector3d> comTrajectoryRecedingHorizon;
     for (int i = 0; i < simulationHorizon; i++)
     {
