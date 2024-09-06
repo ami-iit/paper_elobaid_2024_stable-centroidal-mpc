@@ -86,15 +86,13 @@ https://github.com/user-attachments/assets/bc05ba45-fcff-4a21-9281-8ed78c6ea37a
 If you find this work useful, consider citing it
 
 ```
-@misc{elobaid2024onlinenonlinearcentroidalmpc,
-      title={Online Non-linear Centroidal MPC with Stability Guarantees for Robust Locomotion of Legged Robots}, 
-      author={Mohamed Elobaid and Giulio Turrisi and Lorenzo Rapetti and Giulio Romualdi and Stefano Dafarra and Tomohiro Kawakami and Tomohiro Chaki and Takahide Yoshiike and Claudio Semini and Daniele Pucci},
-      year={2024},
-      eprint={2409.01144},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2409.01144}, 
+@article{elobaid2024online,
+  title={Online Non-linear Centroidal MPC with Stability Guarantees for Robust Locomotion of Legged Robots},
+  author={Elobaid, Mohamed and Turrisi, Giulio and Rapetti, Lorenzo and Romualdi, Giulio and Dafarra, Stefano and Kawakami, Tomohiro and Chaki, Tomohiro and Yoshiike, Takahide and Semini, Claudio and Pucci, Daniele},
+  journal={arXiv preprint arXiv:2409.01144},
+  year={2024}
 }
+
 ```
 
 ## Maintainers
