@@ -15,7 +15,7 @@ Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele
 </div>
 
 <div align="center">
-    <a href="#Code-organizatio"><b>🔧 Code 🔧</b></a>
+    <a href="#Code-organization"><b>🔧 Code 🔧</b></a>
     <a href="#Examples-and-usage"><b>🔧 Examples 🔧</b></a>
 </div>
 
