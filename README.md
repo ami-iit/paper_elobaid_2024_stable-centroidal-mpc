@@ -39,7 +39,7 @@ The MPC problem formulation for both the humanoid case and the quadruped case ar
 ## Examples and usage
 To use the examples in the example directory you can simply run the corresponding `run_and_plot.sh` script as in the following 
 ### humanoid example
-The humanoid example simulates using the Centroidal MPC with the flog `enable_stability_cstr` off and then on. It then generates gifs/animation of the data of the footsteps and CoM trajectory in both cases.
+The humanoid example simulates using the Centroidal MPC with the flag `enable_stability_cstr` off and then on. It then generates gifs/animation of the data of the footsteps and CoM trajectory in both cases.
 The simulation, to test for edge cases, runs the MPC with `dt = 200ms` with a horizon length of `5 steps`. In this way we emphasize the role played by the stability constraints in ensuring success as opposed to the nominal case. To run the example you simply do
 
 ```bash
