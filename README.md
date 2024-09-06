@@ -15,13 +15,87 @@ Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele
 </div>
 
 <div align="center">
-    <a href="#reproducing-the-experiments"><b>🔧 Installation 🔧</b></a>
+    <a href="#Code-organizatio"><b>🔧 Code 🔧</b></a>
+    <a href="#Examples-and-usage"><b>🔧 Examples 🔧</b></a>
 </div>
 
 
-## Reproducing the experiments
+## Paper
 
-<p> ⚠️ Instructions and code to reproduce experiments are coming soon</p>
+The paper is under review. The prepring is available in the following link https://arxiv.org/pdf/2409.01144
+
+
+https://github.com/user-attachments/assets/1869417f-f94b-4368-861f-c0f3b415bb02
+
+
+
+## Code organization
+
+The MPC problem formulation for both the humanoid case and the quadruped case are housed in submodules. The code is organized as follows
+-  examples houses example code and scripts allowing to install and run the MPC and produce plots/simulations for a bipedal and a quadruped.
+- `humanoid-mpc` points to the implementation of the Centroidal MPC (Casadi + IPOPT) with the possibility of setting a flag enabling or disabling the stability constraints
+- `quadruped-mpc` points to the implementation of the Centroidal MPC through ACADOS with the possibility of using different quadruped robots and terrains.
+
+## Examples and usage
+To use the examples in the example directory you can simply run the corresponding `run_and_plot.sh` script as in the following 
+### humanoid example
+The humanoid example simulates using the Centroidal MPC with the flog `enable_stability_cstr` off and then on. It then generates gifs/animation of the data of the footsteps and CoM trajectory in both cases.
+The simulation, to test for edge cases, runs the MPC with `dt = 200ms` with a horizon length of `5 steps`. In this way we emphasize the role played by the stability constraints in ensuring success as opposed to the nominal case. To run the example you simply do
+
+```bash
+cd examples/humanoid
+chmod +x run_and_plot.sh
+./run_and_plot.sh
+```
+The above script builds the MPC suite housed in the submodule `humanoid-mpc` . Make a build directory for the example in `main.cpp` , build and install it, and then run the matlab plotting scripts for the generated data.
+If successful, you should be able to see animations of this kind in your build/bin directory
+
+<table>
+    <tr>
+        <th colspan="2" align="center">Simulations without (left) and With (right) Stability for a biped</th>
+    </tr>
+    <tr>
+        <td align="left"><img src="https://github.com/user-attachments/assets/01f02201-4a7e-4782-9a94-f5670cb887ec" alt="Without Stability" /></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/55e59f28-07d3-4bb8-adfc-9a8bf36ed847" alt="With Stability" /></td>
+    </tr>
+</table>
+
+
+<p> ⚠️ The `run_and_plot.sh` script assumes you have the dependencies of the `bipedallocomotionframework` housed in the submodule `humanoid-mpc`. Please check https://github.com/ami-iit/bipedal-locomotion-framework/?tab=readme-ov-file#page_facing_up-mandatory-dependencies for the details </p>
+
+
+<p> ⚠️ Do not build `bipedallocomotioninterface` from master. The script will handle building and installing the correct version with the relevant commit </p>
+
+
+### Quadruped example
+The quadruped example simulates using the MPC with and without the stability constraints with a quadruped (Aliengo). It produces the simulations using mojoco. To run the example you simply do
+
+```bash
+cd examples/humanoid
+chmod +x run_and_plot.sh
+./run_and_plot.sh
+```
+
+You should be able to see something similar to (with obvious difference in performance between nominal and stable centroidal MPC)
+
+
+https://github.com/user-attachments/assets/bc05ba45-fcff-4a21-9281-8ed78c6ea37a
+
+## Citing this work
+
+If you find this work useful, consider citing it
+
+```
+@misc{elobaid2024onlinenonlinearcentroidalmpc,
+      title={Online Non-linear Centroidal MPC with Stability Guarantees for Robust Locomotion of Legged Robots}, 
+      author={Mohamed Elobaid and Giulio Turrisi and Lorenzo Rapetti and Giulio Romualdi and Stefano Dafarra and Tomohiro Kawakami and Tomohiro Chaki and Takahide Yoshiike and Claudio Semini and Daniele Pucci},
+      year={2024},
+      eprint={2409.01144},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2409.01144}, 
+}
+```
 
 ## Maintainers
 
