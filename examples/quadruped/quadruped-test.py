@@ -1,36 +1,27 @@
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-
-import sys
-sys.path.append(dir_path)
-sys.path.append(dir_path + '/../../quadruped-pympc/quadruped_pympc')
 import time
 import numpy as np
 from tqdm import tqdm
-
 # Gym and Simulation related imports
 from gym_quadruped.quadruped_env import QuadrupedEnv
-from gym_quadruped.utils.quadruped_utils import LegsAttr
-
-# Config imports
-from quadruped_pympc import config as cfg
-
-# Helper functions for plotting
-from quadruped_pympc.helpers.quadruped_utils import plot_swing_mujoco
 from gym_quadruped.utils.mujoco.visual import render_vector
-from gym_quadruped.utils.mujoco.visual import render_sphere
-
-# PyMPC controller imports
-from quadruped_pympc.quadruped_pympc_wrapper import QuadrupedPyMPC_Wrapper
-
+from gym_quadruped.utils.quadruped_utils import LegsAttr
+# Control imports
+from quadruped_pympc import config as cfg
+from quadruped_pympc.helpers.foothold_reference_generator import FootholdReferenceGenerator
+from quadruped_pympc.helpers.periodic_gait_generator import PeriodicGaitGenerator
+from quadruped_pympc.helpers.swing_trajectory_controller import SwingTrajectoryController
+from quadruped_pympc.helpers.terrain_estimator import TerrainEstimator
+from quadruped_pympc.helpers.quadruped_utils import plot_swing_mujoco
 # HeightMap import
 if(cfg.simulation_params['visual_foothold_adaptation'] != 'blind'):
     from gym_quadruped.sensors.heightmap import HeightMap
+    from quadruped_pympc.helpers.visual_foothold_adaptation import VisualFootholdAdaptation
+from gym_quadruped.utils.mujoco.visual import render_sphere
 
 
 
 
-if __name__ == '__main__':
+def main(controller_type="nominal", disturbances=np.array([0, 0, -250, 0, 0, 0])):
     np.set_printoptions(precision=3, suppress=True)
 
     robot_name = cfg.robot
@@ -57,18 +48,6 @@ if __name__ == '__main__':
                        base_vel_command_type="human",  # "forward", "random", "forward+rotate", "human"
                        state_obs_names=state_observables_names,  # Desired quantities in the 'state' vec
                        )
-    # env = QuadrupedEnv(robot=robot_name,
-    #                    hip_height=hip_height,
-    #                    legs_joint_names=LegsAttr(**robot_leg_joints),  # Joint names of the legs DoF
-    #                    feet_geom_name=LegsAttr(**robot_feet_geom_names),  # Geom/Frame id of feet
-    #                    scene=scene_name,
-    #                    sim_dt=simulation_dt,
-    #                    ref_base_lin_vel=(-4.0 * hip_height, 4.0 * hip_height),  # pass a float for a fixed value
-    #                    ref_base_ang_vel=(-np.pi * 3 / 4, np.pi * 3 / 4),  # pass a float for a fixed value
-    #                    ground_friction_coeff=(0.3, 1.5),  # pass a float for a fixed value
-    #                    base_vel_command_type="random",  # "forward", "random", "forward+rotate", "human"
-    #                    state_obs_names=state_observables_names,  # Desired quantities in the 'state' vec
-    #                    )
 
 
     # Some robots require a change in the zero joint-space configuration. If provided apply it
@@ -87,51 +66,15 @@ if __name__ == '__main__':
     # input_rates optimize the delta_GRF (smoooth!)
     # nominal optimize directly the GRF (not smooth)
     # sampling use GPU
-    if cfg.mpc_params['type'] == 'nominal':
+    if controller_type == 'nominal':
         from quadruped_pympc.controllers.gradient.nominal.centroidal_nmpc_nominal import Acados_NMPC_Nominal
 
         controller = Acados_NMPC_Nominal()
 
-        if cfg.mpc_params['optimize_step_freq']:
-            from quadruped_pympc.controllers.gradient.nominal.centroidal_nmpc_gait_adaptive import \
-                Acados_NMPC_GaitAdaptive
-
-            batched_controller = Acados_NMPC_GaitAdaptive()
-
-    elif cfg.mpc_params['type'] == 'input_rates':
-        from quadruped_pympc.controllers.gradient.input_rates.centroidal_nmpc_input_rates import Acados_NMPC_InputRates
-
-        controller = Acados_NMPC_InputRates()
-
-        if cfg.mpc_params['optimize_step_freq']:
-            from quadruped_pympc.controllers.gradient.nominal.centroidal_nmpc_gait_adaptive import \
-                Acados_NMPC_GaitAdaptive
-
-            batched_controller = Acados_NMPC_GaitAdaptive()
-
-    elif(cfg.mpc_params['type'] == 'lyapunov'):
+    elif controller_type == 'lyapunov':
         from quadruped_pympc.controllers.gradient.lyapunov.centroidal_nmpc_lyapunov import Acados_NMPC_Lyapunov
 
         controller = Acados_NMPC_Lyapunov()
-
-        if cfg.mpc_params['optimize_step_freq']:
-            from quadruped_pympc.controllers.gradient.nominal.centroidal_nmpc_gait_adaptive import \
-                Acados_NMPC_GaitAdaptive
-
-            batched_controller = Acados_NMPC_GaitAdaptive()
-
-    elif cfg.mpc_params['type'] == 'sampling':
-        if cfg.mpc_params['optimize_step_freq']:
-            from quadruped_pympc.controllers.sampling.centroidal_nmpc_jax_gait_adaptive import Sampling_MPC
-        else:
-            from quadruped_pympc.controllers.sampling.centroidal_nmpc_jax import Sampling_MPC
-
-        controller = Sampling_MPC(horizon=horizon,
-                                  dt=mpc_dt,
-                                  num_parallel_computations=cfg.mpc_params['num_parallel_computations'],
-                                  sampling_method=cfg.mpc_params['sampling_method'],
-                                  control_parametrization=cfg.mpc_params['control_parametrization'],
-                                  device="gpu")
 
 
     # Periodic gait generator --------------------------------------------------------------
@@ -182,7 +125,7 @@ if __name__ == '__main__':
     ref_base_lin_vel, ref_base_ang_vel = env.target_base_vel()
     ref_orientation = np.array([0.0, 0.0, 0.0])
 
-    # TODO: I would suggest to create a DataClass for "BaseConfig" used in the PotatoModel controllers.
+
     ref_state = {}
 
     # Starting contact sequence
@@ -220,7 +163,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------
     RENDER_FREQ = 30  # Hz
-    N_EPISODES = 500
+    N_EPISODES = 1
     N_STEPS_PER_EPISODE = 2000 if env.base_vel_command_type != "human" else 20000
     last_render_time = time.time()
 
@@ -289,16 +232,6 @@ if __name__ == '__main__':
 
                 ref_feet_pos = vfa.get_footholds_adapted(ref_feet_pos)
 
-                """step_height_modification = False
-                for leg_id, leg_name in enumerate(legs_order):
-                    if(ref_feet_pos[leg_name][2] - frg.lift_off_positions[leg_name][2] > (cfg.simulation_params['step_height'] - 0.05)
-                       and ref_feet_pos[leg_name][2] - frg.lift_off_positions[leg_name][2] > 0.0):
-                        step_height = ref_feet_pos[leg_name][2] - frg.lift_off_positions[leg_name][2] + 0.05
-                        step_height_modification = True
-                        stc.regenerate_swing_trajectory_generator(step_height=step_height, swing_period=stc.swing_period)
-                if(step_height_modification == False):
-                    step_height = cfg.simulation_params['step_height']
-                    stc.regenerate_swing_trajectory_generator(step_height=step_height, swing_period=stc.swing_period)"""
 
 
             # Estimate the terrain slope and elevation -------------------------------------------------------
@@ -317,6 +250,7 @@ if __name__ == '__main__':
             # Update state reference ------------------------------------------------------------------------
             ref_base_lin_vel, ref_base_ang_vel = env.target_base_vel()
 
+
             ref_state |= dict(ref_foot_FL=ref_feet_pos.FL.reshape((1, 3)),
                               ref_foot_FR=ref_feet_pos.FR.reshape((1, 3)),
                               ref_foot_RL=ref_feet_pos.RL.reshape((1, 3)),
@@ -329,15 +263,15 @@ if __name__ == '__main__':
                               )
             # -------------------------------------------------------------------------------------------------
 
-        # Add External Wrenches ---------------------------------------------------------------------
-            if(cfg.simulation_params['use_external_disturbances']):
-                disturbance_wrench_bound = cfg.simulation_params['external_disturbances_bound']
-                env.mjData.qfrc_applied[0] = disturbance_wrench_bound[0]
-                env.mjData.qfrc_applied[1] = disturbance_wrench_bound[1]
-                env.mjData.qfrc_applied[2] = disturbance_wrench_bound[2]
-                env.mjData.qfrc_applied[3] = disturbance_wrench_bound[3]
-                env.mjData.qfrc_applied[4] = disturbance_wrench_bound[4]
-                env.mjData.qfrc_applied[5] = disturbance_wrench_bound[5]
+
+
+            disturbance_wrench_bound = disturbances
+            env.mjData.qfrc_applied[0] = disturbance_wrench_bound[0]
+            env.mjData.qfrc_applied[1] = disturbance_wrench_bound[1]
+            env.mjData.qfrc_applied[2] = disturbance_wrench_bound[2]
+            env.mjData.qfrc_applied[3] = disturbance_wrench_bound[3]
+            env.mjData.qfrc_applied[4] = disturbance_wrench_bound[4]
+            env.mjData.qfrc_applied[5] = disturbance_wrench_bound[5]
 
 
             # TODO: this should be hidden inside the controller forward/get_action method
@@ -353,111 +287,35 @@ if __name__ == '__main__':
                 else:
                     inertia = cfg.inertia.flatten()
 
-                if ((cfg.mpc_params['optimize_step_freq'])):
-                    # we can always optimize the step freq, or just at the apex of the swing
-                    # to avoid possible jittering in the solution
-                    #optimize_swing = 1
-                    optimize_swing = stc.check_apex_condition(current_contact)
-                    if(optimize_swing == 1):
-                        nominal_sample_freq = pgg.step_freq
-                else:
-                    optimize_swing = 0
 
 
-                # If we use sampling
-                if (cfg.mpc_params['type'] == 'sampling'):
 
-                    # Convert data to jax and shift previous solution
-                    state_current_jax, \
-                    reference_state_jax, = controller.prepare_state_and_reference(state_current,
-                                                                                  ref_state,
-                                                                                  current_contact,
-                                                                                  previous_contact_mpc)
-                    previous_contact_mpc = current_contact
-
-                    for iter_sampling in range(cfg.mpc_params['num_sampling_iterations']):
-                        controller = controller.with_newkey()
-                        if (cfg.mpc_params['sampling_method'] == 'cem_mppi'):
-                            if (iter_sampling == 0):
-                                controller = controller.with_newsigma(cfg.mpc_params['sigma_cem_mppi'])
-
-                            nmpc_GRFs, \
-                            nmpc_footholds, \
-                            controller.best_control_parameters, \
-                            best_cost, \
-                            best_sample_freq, \
-                            costs, \
-                            sigma_cem_mppi = controller.jitted_compute_control(state_current_jax, reference_state_jax,
-                                                                        contact_sequence, controller.best_control_parameters,
-                                                                        controller.master_key, controller.sigma_cem_mppi)
-                            controller = controller.with_newsigma(sigma_cem_mppi)
-                        else:
-                            nmpc_GRFs, \
-                            nmpc_footholds, \
-                            controller.best_control_parameters, \
-                            best_cost, \
-                            best_sample_freq, \
-                            costs = controller.jitted_compute_control(state_current_jax, reference_state_jax,
-                                                               contact_sequence, controller.best_control_parameters,
-                                                               controller.master_key, pgg.phase_signal,
-                                                               nominal_sample_freq, optimize_swing)
+                nmpc_GRFs, \
+                nmpc_footholds, _, \
+                status = controller.compute_control(state_current,
+                                                    ref_state,
+                                                    contact_sequence,
+                                                    inertia=inertia)
 
 
-                    nmpc_footholds = ref_feet_pos
-                    nmpc_GRFs = np.array(nmpc_GRFs)
+                nmpc_footholds = LegsAttr(FL=nmpc_footholds[0],
+                                            FR=nmpc_footholds[1],
+                                            RL=nmpc_footholds[2],
+                                            RR=nmpc_footholds[3])
 
 
-                # If we use Gradient-Based MPC
-                else:
-
-                    nmpc_GRFs, \
-                    nmpc_footholds, _, \
-                    status = controller.compute_control(state_current,
-                                                        ref_state,
-                                                        contact_sequence,
-                                                        inertia=inertia)
 
 
-                    nmpc_footholds = LegsAttr(FL=nmpc_footholds[0],
-                                              FR=nmpc_footholds[1],
-                                              RL=nmpc_footholds[2],
-                                              RR=nmpc_footholds[3])
+                # If the controller is using RTI, we need to linearize the mpc after its computation
+                # this helps to minize the delay between new state->control, but only in a real case.
+                # Here we are in simulation and does not make any difference for now
+                if (controller.use_RTI):
+                    # preparation phase
+                    controller.acados_ocp_solver.options_set('rti_phase', 1)
+                    status = controller.acados_ocp_solver.solve()
+                    # print("preparation phase time: ", controller.acados_ocp_solver.get_stats('time_tot'))
 
 
-                    if cfg.mpc_params['optimize_step_freq'] and optimize_swing == 1:
-                        contact_sequence_temp = np.zeros((len(cfg.mpc_params['step_freq_available']), 4, horizon))
-                        for j in range(len(cfg.mpc_params['step_freq_available'])):
-                            pgg_temp = PeriodicGaitGenerator(duty_factor=pgg.duty_factor,
-                                                             step_freq=cfg.mpc_params['step_freq_available'][j],
-                                                             gait_type=pgg.gait_type,
-                                                             horizon=horizon)
-                            pgg_temp.set_phase_signal(pgg.phase_signal)
-                            contact_sequence_temp[j] = pgg_temp.compute_contact_sequence(contact_sequence_dts=contact_sequence_dts,
-                                                                                            contact_sequence_lenghts=contact_sequence_lenghts)
-
-
-                        costs, \
-                        best_sample_freq = batched_controller.compute_batch_control(state_current,
-                                                                                    ref_state,
-                                                                                    contact_sequence_temp)
-
-                    # If the controller is using RTI, we need to linearize the mpc after its computation
-                    # this helps to minize the delay between new state->control, but only in a real case.
-                    # Here we are in simulation and does not make any difference for now
-                    if (controller.use_RTI):
-                        # preparation phase
-                        controller.acados_ocp_solver.options_set('rti_phase', 1)
-                        status = controller.acados_ocp_solver.solve()
-                        # print("preparation phase time: ", controller.acados_ocp_solver.get_stats('time_tot'))
-
-
-                # If we have optimized the gait, we set all the timing parameters
-                if ((cfg.mpc_params['optimize_step_freq']) and (optimize_swing == 1)):
-                    pgg.step_freq = np.array([best_sample_freq])[0]
-                    nominal_sample_freq = pgg.step_freq
-                    frg.stance_time = (1 / pgg.step_freq) * pgg.duty_factor
-                    swing_period = (1 - pgg.duty_factor) * (1 / pgg.step_freq)
-                    stc.regenerate_swing_trajectory_generator(step_height=step_height, swing_period=swing_period)
 
 
                 # TODO: Indexing should not be hardcoded. Env should provide indexing of leg actuator dimensions.
@@ -592,3 +450,12 @@ if __name__ == '__main__':
 
 
     env.close()
+
+
+
+
+
+
+if __name__ == '__main__':
+    main(controller_type="nominal", disturbances=np.array([0, 0, -200, 0, 0, 0]))
+    main(controller_type="lyapunov", disturbances=np.array([0, 0, -200, 0, 0, 0]))

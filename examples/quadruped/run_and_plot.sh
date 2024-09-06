@@ -38,4 +38,3 @@ echo "ACADOS_SOURCE_DIR: $ACADOS_SOURCE_DIR"
 
 
 python3 quadruped-test.py
-
