@@ -1,0 +1,7 @@
+[submodule "quadruped-mpc"]
+	path = quadruped-mpc
+	url = https://github.com/iit-DLSLab/Quadruped-PyMPC.git
+[submodule "humanoid-mpc"]
+	path = humanoid-mpc
+	url = https://github.com/mebbaid/bipedal-locomotion-framework.git
+	branch = mpc_with_stability
