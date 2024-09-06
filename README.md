@@ -64,7 +64,7 @@ If successful, you should be able to see animations of this kind in your build/b
 <p> ⚠️ The `run_and_plot.sh` script assumes you have the dependencies of the `bipedallocomotionframework` housed in the submodule `humanoid-mpc`. Please check https://github.com/ami-iit/bipedal-locomotion-framework/?tab=readme-ov-file#page_facing_up-mandatory-dependencies for the details </p>
 
 
-<p> ⚠️ Do not build `bipedallocomotioninterface` from master. The script will handle building and installing the correct version with the relevant commit </p>
+<p> ⚠️ Do not build `bipedallocomotioninterface` from master. The script will handle building and installing the correct version with the relevant commit. Only ensure you have the dependencies installed in your system </p>
 
 
 ### Quadruped example
