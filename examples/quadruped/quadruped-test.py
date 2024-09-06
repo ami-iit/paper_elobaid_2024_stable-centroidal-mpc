@@ -1,3 +1,6 @@
+# Description: This script is used to compare the nominal and lyapunov controllers
+
+
 import time
 import numpy as np
 from tqdm import tqdm
@@ -21,7 +24,7 @@ from gym_quadruped.utils.mujoco.visual import render_sphere
 
 
 
-def main(controller_type="nominal", disturbances=np.array([0, 0, -250, 0, 0, 0])):
+def main(controller_type="nominal", disturbances=np.array([0, 0, -200, 0, 0, 0])):
     np.set_printoptions(precision=3, suppress=True)
 
     robot_name = cfg.robot
@@ -43,9 +46,9 @@ def main(controller_type="nominal", disturbances=np.array([0, 0, -250, 0, 0, 0])
                        feet_geom_name=robot_feet_geom_names,  # Geom/Frame id of feet
                        scene=scene_name,
                        sim_dt=simulation_dt,
-                       ref_base_lin_vel=0.0,  # pass a float for a fixed value
+                       ref_base_lin_vel=0.3,  # pass a float for a fixed value
                        ground_friction_coeff=1.5,  # pass a float for a fixed value
-                       base_vel_command_type="human",  # "forward", "random", "forward+rotate", "human"
+                       base_vel_command_type="forward",  # "forward", "random", "forward+rotate", "human"
                        state_obs_names=state_observables_names,  # Desired quantities in the 'state' vec
                        )
 
@@ -164,7 +167,7 @@ def main(controller_type="nominal", disturbances=np.array([0, 0, -250, 0, 0, 0])
     # --------------------------------------------------------------
     RENDER_FREQ = 30  # Hz
     N_EPISODES = 1
-    N_STEPS_PER_EPISODE = 2000 if env.base_vel_command_type != "human" else 20000
+    N_STEPS_PER_EPISODE = 10000
     last_render_time = time.time()
 
     state_obs_history, ctrl_state_history = [], []
