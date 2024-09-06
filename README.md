@@ -22,7 +22,7 @@ Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele
 
 ## Paper
 
-The paper is under review. The prepring is available in the following link https://arxiv.org/pdf/2409.01144
+The paper is under review. The preprint is available in the following link https://arxiv.org/pdf/2409.01144
 
 
 https://github.com/user-attachments/assets/1869417f-f94b-4368-861f-c0f3b415bb02
