@@ -83,7 +83,7 @@ https://github.com/user-attachments/assets/bc05ba45-fcff-4a21-9281-8ed78c6ea37a
 
 ## Citing this work
 
-If you find this work useful, consider citing it
+Feel free to open issues on this repo for specific questions. If you find this work useful, consider citing it
 
 ```
 @article{elobaid2024online,
