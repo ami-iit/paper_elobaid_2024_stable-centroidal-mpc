@@ -3,7 +3,7 @@ Online Non-linear Centroidal MPC with Stability Guarantees
 for Robust Legged Robots Locomotion</h1>
 
 <div align="center">
-<p>Mohamed Elobaid, Giulio Turrisi, Lorezno Rapetti, Giulio Romualdi, Stefano Dafarra, </br>
+<p>Mohamed Elobaid, Giulio Turrisi, Lorenzo Rapetti, Giulio Romualdi, Stefano Dafarra, </br>
 Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele Pucci</p>
 </div>
 
