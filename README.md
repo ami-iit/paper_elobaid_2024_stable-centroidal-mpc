@@ -11,7 +11,7 @@ Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele
 
 
 <div align="center">
-    📅 Submitted to the IEEE Robotics and Automation Letters (RAL) 🤖
+    📅 IEEE Robotics and Automation Letters (RAL) 🤖
 </div>
 
 <div align="center">
