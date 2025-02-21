@@ -71,7 +71,7 @@ If successful, you should be able to see animations of this kind in your build/b
 The quadruped example simulates using the MPC with and without the stability constraints with a quadruped (Aliengo). It produces the simulations using mojoco. To run the example you simply do
 
 ```bash
-cd examples/humanoid
+cd examples/quadruped
 chmod +x run_and_plot.sh
 ./run_and_plot.sh
 ```
