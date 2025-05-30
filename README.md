@@ -25,7 +25,8 @@ Tomohiro Kawakami, Tomohiro Chaki, Takahide Yoshiike, Claudio Semini and Daniele
 The paper appeared in the March issue of IEEE RA-L 2025. The preprint is available in the following link https://arxiv.org/pdf/2409.01144
 
 
-https://github.com/user-attachments/assets/1869417f-f94b-4368-861f-c0f3b415bb02
+https://github.com/user-attachments/assets/95e4774c-9b37-42a9-8d3a-af2524bffbc6
+
 
 
 
